@@ -1,9 +1,10 @@
-import "@testing-library/jest-dom";
-import { render } from "@testing-library/react";
+import React from "react";
+import { render, screen } from "@testing-library/react";
 import TaskList from "../components/TaskList";
-import { TASKS } from "../data";
+import { TASKS } from "../components/data";
 
 test("displays all items when initially rendered", () => {
-  const { container } = render(<TaskList tasks={TASKS} />);
-  expect(container.querySelectorAll(".task")).toHaveLength(TASKS.length);
+  render(<TaskList tasks={TASKS} />);
+  const taskItems = screen.getAllByTestId("task-item");
+  expect(taskItems).toHaveLength(TASKS.length);
 });

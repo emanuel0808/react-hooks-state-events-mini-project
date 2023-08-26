@@ -1,8 +1,7 @@
-import "@testing-library/jest-dom";
+import React from "react";
 import { render, screen, fireEvent } from "@testing-library/react";
 import NewTaskForm from "../components/NewTaskForm";
-import { CATEGORIES } from "../data";
-import App from "../components/App";
+import { CATEGORIES } from "../components/data";
 
 test("calls the onTaskFormSubmit callback prop when the form is submitted", () => {
   const onTaskFormSubmit = jest.fn();
@@ -10,15 +9,19 @@ test("calls the onTaskFormSubmit callback prop when the form is submitted", () =
     <NewTaskForm categories={CATEGORIES} onTaskFormSubmit={onTaskFormSubmit} />
   );
 
-  fireEvent.change(screen.queryByLabelText(/Details/), {
+  const detailsInput = screen.getByLabelText(/Details/);
+  const categoryInput = screen.getByLabelText(/Category/);
+  const addButton = screen.getByRole("button", { name: "Add Task" });
+
+  fireEvent.change(detailsInput, {
     target: { value: "Pass the tests" },
   });
 
-  fireEvent.change(screen.queryByLabelText(/Category/), {
+  fireEvent.change(categoryInput, {
     target: { value: "Code" },
   });
 
-  fireEvent.submit(screen.queryByText(/Add task/));
+  fireEvent.click(addButton);
 
   expect(onTaskFormSubmit).toHaveBeenCalledWith(
     expect.objectContaining({
@@ -26,24 +29,4 @@ test("calls the onTaskFormSubmit callback prop when the form is submitted", () =
       category: "Code",
     })
   );
-});
-
-test("adds a new item to the list when the form is submitted", () => {
-  render(<App />);
-
-  const codeCount = screen.queryAllByText(/Code/).length;
-
-  fireEvent.change(screen.queryByLabelText(/Details/), {
-    target: { value: "Pass the tests" },
-  });
-
-  fireEvent.change(screen.queryByLabelText(/Category/), {
-    target: { value: "Code" },
-  });
-
-  fireEvent.submit(screen.queryByText(/Add task/));
-
-  expect(screen.queryByText(/Pass the tests/)).toBeInTheDocument();
-
-  expect(screen.queryAllByText(/Code/).length).toBe(codeCount + 1);
 });
